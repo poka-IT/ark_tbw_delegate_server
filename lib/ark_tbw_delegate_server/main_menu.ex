@@ -1,15 +1,4 @@
 defmodule ArkTbwDelegateServer.MainMenu do
-  @menu """
-Main Menu
----
-
-1. Calculate and disburse rewards
-2. Previous disbursements
-3. Outstanding balances
-4. Voters
-5. Exit
-"""
-
   require IEx
 
   import ArkTbwDelegateServer.Utils
@@ -23,7 +12,16 @@ Main Menu
   # private
 
   defp display(opts) do
-    [@menu, :color46]
+    [:green, :bright, "
+    Main Menu
+    ---
+
+    1. Calculate and disburse rewards
+    2. Previous disbursements
+    3. Outstanding balances
+    4. Voters
+    5. Exit
+    "]
     |> Bunt.puts
 
     case receive_input("Please make your selection") do
