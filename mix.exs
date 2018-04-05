@@ -22,12 +22,12 @@ defmodule ArkTbwDelegateServer.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:ark_elixir, path: "../ARK-Elixir"},
       {:bunt, "~> 0.1"},
       {:cli_spinners, "~> 0.1.0"},
       {:decimal, "~> 1.0"},
       {:poison, "~> 3.1"},
-      {:progress_bar, "> 0.0.0"},
-      {:tesla, "~> 0.10"},
+      {:progress_bar, "> 0.0.0"}
     ]
   end
 end

@@ -3,10 +3,17 @@ defmodule ArkTbwDelegateServer.MainMenu do
 
   import ArkTbwDelegateServer.Utils
 
-  alias ArkTbwDelegateServer.{Disbursements, Voters}
+  alias ArkTbwDelegateServer.{Delegate, Disbursements, Voters}
 
   def run(opts) do
-    display(opts)
+    clear()
+    motd()
+
+    opts
+    |> Delegate.display
+    |> display
+
+    opts
   end
 
   # private
@@ -37,8 +44,7 @@ defmodule ArkTbwDelegateServer.MainMenu do
       _ -> receive_input("Invalid entry. Please make your selection (12345bq)")
     end
 
-    IO.gets("\n\nPress enter to return to the main menu.")
-    clear()
+    IO.gets("\n\n    Press enter to return to the main menu.")
     run(opts)
   end
 end

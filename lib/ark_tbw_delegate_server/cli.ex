@@ -10,10 +10,12 @@ defmodule ArkTbwDelegateServer.CLI do
   all unpaid forged blocks since your last payment run.
 
   Pay run data is recorded on the ARK blockchain in the `vendorId` field encoded
-  in `JSON` format. The data is recorded when paying to your `delegate_payout_address`.
+  in `JSON` format. The data is recorded when paying to your
+  `delegate_payout_address`.
 
-  Any front end data you would like to show your delegates can be built from this data.
-  Learn more about how to do that here `We need to write something about this and put it here`
+  Any front end data you would like to show your delegates can be built from
+  this data. Learn more about how to do that here `We need to write something
+  about this and put it here`
 
   > NOTE: Configuration is saved and defaults to the last values entered. If no
   value is passed in command line or via past config, the user is prompted.
@@ -54,6 +56,9 @@ defmodule ArkTbwDelegateServer.CLI do
 
   @invalid_voter_share_message "Please enter a value between 0 and 1..."
 
+  @mainnet_nethash "578e820911f24e039733b45e4882b73e301f813a0d2c31330dafda8" <>
+    "4534ffa23"
+
   @node_url_prompt "Please enter the address of the node you'd like to " <>
     "scan. Please be friendly to the ecosystem and use your own"
 
@@ -73,17 +78,16 @@ defmodule ArkTbwDelegateServer.CLI do
 
   @switch_aliases [
     c: :config,
-    da: :delegate_address,
-    dpa: :delegate_payout_address,
-    h: :initial_block_height,
+    d: :delegate_address,
+    i: :initial_block_height,
+    k: :private_key,
     n: :node_url,
-    pk: :private_key,
+    p: :delegate_payout_address,
     s: :voter_share
   ]
 
   @switch_defaults [
     config: "./config.json",
-    node_url: :default,
     voter_share: "0.9"
   ]
 
@@ -92,7 +96,7 @@ defmodule ArkTbwDelegateServer.CLI do
 
   import ArkTbwDelegateServer.Utils
 
-  alias ArkTbwDelegateServer.{Logger, MainMenu}
+  alias ArkTbwDelegateServer.{Delegate, Logger, MainMenu}
 
   @doc """
   Entry point for command line application.
@@ -102,9 +106,6 @@ defmodule ArkTbwDelegateServer.CLI do
     if Enum.member?(args, "--help") do
       help()
     else
-      clear()
-      motd()
-
       opts = extract_options(args)
       config = load_config(opts)
 
@@ -115,6 +116,9 @@ defmodule ArkTbwDelegateServer.CLI do
       |> prompt_for_missing_options # Ask for missing options
       |> validate_share
       |> save_config(opts) # Save the config
+      |> load_api_client
+      |> load_delegate_public_key
+      |> Delegate.load
       |> MainMenu.run
     end
   end
@@ -140,14 +144,32 @@ defmodule ArkTbwDelegateServer.CLI do
   end
 
   defp help do
-    [:color23, "
-    ---------------------------------
-    | ArkTbws Help dots8            |
-    |                               |
-    |                               |
-    --------------------------------
-    "]
-    |> Bunt.puts
+   Bunt.puts([:white, "
+Usage: ark_tbw_delegate_server <command>
+
+Configuration Options:
+
+    -c, --config                      path to CONFIG file
+    -d, --delegate_address,           the delegate ADDRESS to scan
+    -i, --initial_block_height,       starting BLOCK HEIGHT to begin pay runs
+    -k, --private_key,                delegate SEED for sending payments
+    -n, --node_url,                   delegate node URL
+    -p, --delegate_payout_address,    your delegate payout ADDRESS
+    -s, --voter_share,                % to share with voters (eg. 0.9)
+
+        --help,                       this help menu
+    "])
+  end
+
+  defp load_api_client(opts) do
+    client = ArkElixir.Client.new(%{
+      nethash: @mainnet_nethash,
+      network_address: ArkElixir.Client.mainnet_network_address(),
+      url: opts.node_url,
+      version: "1.1.1"
+    })
+
+    Map.put(opts, :client, client)
   end
 
   defp load_config(opts) do
@@ -157,13 +179,11 @@ defmodule ArkTbwDelegateServer.CLI do
     end
   end
 
-  defp motd do
-    [:color202,
-"""
-ARK True Block Weight Delegate Server 1.0
-"""
-    ]
-    |> Bunt.puts
+  defp load_delegate_public_key(
+    %{client: client, delegate_address: delegate_address} = opts
+  ) do
+    {:ok, public_key} = ArkElixir.Account.publickey(client, delegate_address)
+    Map.put(opts, :delegate_public_key, public_key)
   end
 
   # delegate_address: :string,

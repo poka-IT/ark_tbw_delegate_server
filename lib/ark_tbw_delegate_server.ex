@@ -12,7 +12,7 @@ defmodule ArkTbwDelegateServer do
       :world
 
   """
-  def hello do
-    :world
+  def run do
+    ArkTbwDelegateServer.CLI.main()
   end
 end
