@@ -20,7 +20,8 @@ defmodule ArkTbwDelegateServer.Delegate do
   end
 
   def forged(%{client: client, delegate: delegate}) do
-    cache_path = ".#{delegate.address}.cache"
+    File.mkdir(".cache")
+    cache_path = "./.cache/#{delegate.address}.forged"
 
     blocks =
       case File.read(cache_path) do
@@ -52,11 +53,11 @@ defmodule ArkTbwDelegateServer.Delegate do
     {:ok, new_blocks} = ArkElixir.Block.blocks(
       client,
       generatorPublicKey: public_key,
-      limit: 50,
+      limit: 100,
       offset: offset
     )
 
-    if Enum.count(new_blocks) < 50 do
+    if Enum.count(new_blocks) < 100 do
       blocks ++ new_blocks
     else
       fetch_blocks(client, public_key, blocks ++ new_blocks)
