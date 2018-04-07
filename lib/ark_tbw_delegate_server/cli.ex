@@ -96,7 +96,7 @@ defmodule ArkTbwDelegateServer.CLI do
 
   import ArkTbwDelegateServer.Utils
 
-  alias ArkTbwDelegateServer.{Delegate, Logger, MainMenu}
+  alias ArkTbwDelegateServer.{Logger, MainMenu}
 
   @doc """
   Entry point for command line application.
@@ -118,7 +118,6 @@ defmodule ArkTbwDelegateServer.CLI do
       |> save_config(opts) # Save the config
       |> load_api_client
       |> load_delegate_public_key
-      |> Delegate.load
       |> MainMenu.run
     end
   end

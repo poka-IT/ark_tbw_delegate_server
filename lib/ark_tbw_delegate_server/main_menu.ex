@@ -10,6 +10,7 @@ defmodule ArkTbwDelegateServer.MainMenu do
     motd()
 
     opts
+    |> Delegate.load
     |> Delegate.display
     |> display
 
@@ -32,7 +33,7 @@ defmodule ArkTbwDelegateServer.MainMenu do
     |> Bunt.puts
 
     case receive_input("Please make your selection") do
-      :back -> display(opts)
+      :back -> run(opts)
       :quit -> Process.exit(self(), :normal)
 
       "1" -> Disbursements.run(opts)

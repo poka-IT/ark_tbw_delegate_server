@@ -43,8 +43,7 @@ defmodule ArkTbwDelegateServer.Utils do
 
     case input do
       "" ->
-        IO.write "    #{@default_prompt}"
-        receive_input()
+        receive_input(@default_prompt)
       "b" ->
         :back
       "q" ->

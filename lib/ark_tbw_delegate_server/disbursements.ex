@@ -1,5 +1,5 @@
 defmodule ArkTbwDelegateServer.Disbursements do
-  alias ArkTbwDelegateServer.Logger
+  alias ArkTbwDelegateServer.{Delegate, Logger}
 
   def list(opts) do
     Logger.debug(opts)
@@ -7,7 +7,9 @@ defmodule ArkTbwDelegateServer.Disbursements do
   end
 
   def run(opts) do
-    Logger.debug(opts)
+    Logger.debug(opts.delegate)
     IO.puts "I'm disbursing shit now..."
+    Delegate.forged(opts)
+    IO.puts "done!"
   end
 end
