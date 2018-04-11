@@ -1,21 +1,58 @@
-# ArkTbwDelegateServer
+# ARK True Block Weight Delegate Server
+![ARK Community Fund Project](https://arkcommunity.fund/media-kit/funded/banner.png)
+Development paid for by the
+[ARK Community Fund](https://arkcommunity.fund/proposal/ark-tbw-delegate-server)<br/>
+Development by [arkoar.group delegate](https://arkoar.group)
 
-**TODO: Add description**
+## Purpose
+ARK True Block Weight Delegate Server is a community funded project for
+managing voter reward disbursements.
 
-## Installation
+Our focus is on making the delegate reward payment process as fast and easy as possible.
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `ark_tbw_delegate_server` to your list of dependencies in `mix.exs`:
+## Delegate Usage
+### Installation
 
-```elixir
-def deps do
-  [
-    {:ark_tbw_delegate_server, "~> 0.1.0"}
-  ]
-end
+## Developers
+
+### Contributions
+If you would like to contribute to ARK TBW Server, fork this repository and
+submit a pull request on a new branch.
+
+#### Editor Settings
+  - 1 soft tab
+  - 80 char line limit
+  - strip trailing white space
+  - add new line to eof on save
+
+#### Development Requirements
+  - Erlang 20.1
+  - Elixir 1.6+
+
+#### Development Setup
+We recommend using [asdf](https://github.com/asdf-vm/asdf) to manage Erlang & Elixir installations. You can read and watch more about the power of Erlang/Elixir, BeamVM and OTP [here](https://erlangcentral.org/tag/beam/). Elixir/Erlang now power some of the worlds largest messaging systems such as WhatsApp, League of Legends, Discord, and more.  
+
+```
+mix deps.get
+mix escript.build
+./ark_tbw_delegate_server
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/ark_tbw_delegate_server](https://hexdocs.pm/ark_tbw_delegate_server).
+## Development Roadmap
+**If you would like to help fund feature development of this application you can do so through the ARK Community Fund.**
+- API(Time Traveling Balance & Payment History Search)
+  - Get a wallets balance at any moment in time
+  - Payment run history
+  - Other voter and payment related data
+- Twitter Integration(Automated payment run tweets)
+- Slack Integration(Automated payment messages)
+- Discord Integration(Automated payment messages)
+- Web/Desktop GUI
+- V2 Wallet Plugin
 
+## Contributors
+<a href="https://github.com/arkoar-group">
+  <img src="https://avatars0.githubusercontent.com/u/37595014?s=200&v=4"
+    width="100">
+  </img>
+</a>

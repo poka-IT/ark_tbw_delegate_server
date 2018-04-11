@@ -33,11 +33,11 @@ defmodule ArkTbwDelegateServer.CLI do
   ### Command Line Aliases and Configurations options
   `./ark_tbw_delegate_server --help`
 
-  `--delegate_address(da)`
-  `--delegate_payout_address(dpa)`
+  `--delegate_address(d)`
+  `--delegate_payout_address(p)`
   `--voter_share(s)`
-  `--initial_block_height(h)`
-  `--private_key(pk)`
+  `--initial_block_height(i)`
+  `--private_key(k)`
   `--node_url(n)`
   """
 
@@ -45,14 +45,15 @@ defmodule ArkTbwDelegateServer.CLI do
     "WARNING: Your configuration was not saved."
 
   @delegate_address_prompt "Please enter the address of the delegate you " <>
-    "would like to scan"
+    "would like to scan."
 
   @delegate_payout_address_prompt "Please enter the address you would like " <>
-    "receive the delegate share at"
+    "to receive your delegate share at."
+
+  @fee_paid_prompt "Do you cover transaction fees for disbursement payments?(Y/N)"
 
   @initial_block_height_prompt "Please enter the starting block height. " <>
-    "If you're not sure, enter the number of the first block forged by the " <>
-    "delegate you are scanning"
+    "If you're not sure, enter the height of the last block you paid out. "
 
   @invalid_voter_share_message "Please enter a value between 0 and 1..."
 
@@ -60,18 +61,23 @@ defmodule ArkTbwDelegateServer.CLI do
     "4534ffa23"
 
   @node_url_prompt "Please enter the address of the node you'd like to " <>
-    "scan. Please be friendly to the ecosystem and use your own"
+    "scan. Please be friendly to the ecosystem and use your own."
 
-  @private_key_prompt "Please enter the private key of the account from " <>
-    "which the ARK rewards will be sent"
+  @payout_threshold_prompt "Please enter the minimum balance required for " <>
+    "a reward disbursement. (example: 0.3)"
+
+  @private_key_prompt "Please enter the private key of your delegate account " <>
+    "for reward disbursements."
 
   @switches [
     config: :string,
     delegate_address: :string,
     delegate_payout_address: :string,
     help: nil,
+    fee_paid: :string,
     initial_block_height: :string,
     node_url: :string,
+    payout_threshold: :string,
     private_key: :string,
     voter_share: :string
   ]
@@ -79,24 +85,25 @@ defmodule ArkTbwDelegateServer.CLI do
   @switch_aliases [
     c: :config,
     d: :delegate_address,
+    f: :fee_paid,
     i: :initial_block_height,
     k: :private_key,
     n: :node_url,
     p: :delegate_payout_address,
-    s: :voter_share
+    s: :voter_share,
+    t: :payout_threshold
   ]
 
   @switch_defaults [
-    config: "./config.json",
-    voter_share: "0.9"
+    config: "./config.json"
   ]
 
   @voter_share_prompt "Please enter the percentage share that voters " <>
-    "receive expressed as a decimal. (ex. 0.9)"
+    "receive expressed as a decimal. (example: 0.95)"
 
   import ArkTbwDelegateServer.Utils
 
-  alias ArkTbwDelegateServer.{Logger, MainMenu}
+  alias ArkTbwDelegateServer.{Audit, Logger, MainMenu}
 
   @doc """
   Entry point for command line application.
@@ -116,6 +123,7 @@ defmodule ArkTbwDelegateServer.CLI do
       |> prompt_for_missing_options # Ask for missing options
       |> validate_share
       |> save_config(opts) # Save the config
+      |> create_audit_logger
       |> load_api_client
       |> load_delegate_public_key
       |> MainMenu.run
@@ -128,6 +136,12 @@ defmodule ArkTbwDelegateServer.CLI do
     Map.get(opts, :config, @switch_defaults[:config])
   end
 
+  defp create_audit_logger(opts) do
+    audit = Audit.new
+    Audit.write(audit, "Running ArkTbwDelegateServer")
+    Map.put(opts, :audit, audit)
+  end
+
   defp extract_options(args) do
     args
     |> OptionParser.parse(aliases: @switch_aliases, switches: @switches)
@@ -138,8 +152,20 @@ defmodule ArkTbwDelegateServer.CLI do
   defp fetch_or_prompt(opts, key, prompt) do
     case Map.get(opts, key) do
       nil -> receive_input(prompt)
-      value -> value
+      value -> to_string(value)
     end
+  end
+
+  defp handle_prompt(:back) do
+    Process.exit(self(), :normal)
+  end
+
+  defp handle_prompt(:quit) do
+    Process.exit(self(), :normal)
+  end
+
+  defp handle_prompt(value) do
+    value
   end
 
   defp help do
@@ -149,12 +175,14 @@ Usage: ark_tbw_delegate_server <command>
 Configuration Options:
 
     -c, --config                      path to CONFIG file
-    -d, --delegate_address,           the delegate ADDRESS to scan
-    -i, --initial_block_height,       starting BLOCK HEIGHT to begin pay runs
-    -k, --private_key,                delegate SEED for sending payments
-    -n, --node_url,                   delegate node URL
-    -p, --delegate_payout_address,    your delegate payout ADDRESS
-    -s, --voter_share,                % to share with voters (eg. 0.9)
+    -d, --delegate-address            the delegate ADDRESS to scan
+    -f, --fee-paid                    delegate pays transaction fees for disbursement
+    -i, --initial-block-height        starting BLOCK HEIGHT which all future payment runs will be calculated. This should be the block height of the last block you paid out.
+    -k, --private-key                 delegate SEED for sending payments
+    -n, --node-url                    delegate node URL
+    -p, --delegate-payout-address     your delegate payout ADDRESS
+    -s, --voter-share                 % to share with voters (eg. 0.9)
+    -t, --payout-threshold            the minimum ARKTOSHI due before disbursement
 
         --help,                       this help menu
     "])
@@ -185,67 +213,58 @@ Configuration Options:
     Map.put(opts, :delegate_public_key, public_key)
   end
 
-  # delegate_address: :string,
-  # delegate_payout_address: :string,
-  # initial_block_height: :string,
-  # node_url: :string,
-  # private_key: :string
   defp prompt_for_missing_options(opts) do
     delegate_address =
-      case fetch_or_prompt(opts, :delegate_address, @delegate_address_prompt) do
-        :back -> Process.exit(self(), :normal)
-        :quit -> Process.exit(self(), :normal)
-        value -> value
-      end
+      opts
+      |> fetch_or_prompt(:delegate_address, @delegate_address_prompt)
+      |> handle_prompt
 
     delegate_payout_address =
-      case fetch_or_prompt(
-        opts,
+      opts
+      |> fetch_or_prompt(
         :delegate_payout_address,
         @delegate_payout_address_prompt
-      ) do
-        :back -> Process.exit(self(), :normal)
-        :quit -> Process.exit(self(), :normal)
-        value -> value
-      end
+      )
+      |> handle_prompt
 
     initial_block_height =
-      case fetch_or_prompt(
-        opts,
-        :initial_block_height,
-        @initial_block_height_prompt
-      ) do
-        :back -> Process.exit(self(), :normal)
-        :quit -> Process.exit(self(), :normal)
-        value -> value
-      end
+      opts
+      |> fetch_or_prompt(:initial_block_height, @initial_block_height_prompt)
+      |> handle_prompt
+      |> String.to_integer
 
     node_url =
-      case fetch_or_prompt(opts, :node_url, @node_url_prompt) do
-        :back -> Process.exit(self(), :normal)
-        :quit -> Process.exit(self(), :normal)
-        value -> value
-      end
+      opts
+      |> fetch_or_prompt(:node_url, @node_url_prompt)
+      |> handle_prompt
 
     private_key =
-      case fetch_or_prompt(opts, :private_key, @private_key_prompt) do
-        :back -> Process.exit(self(), :normal)
-        :quit -> Process.exit(self(), :normal)
-        value -> value
-      end
+      opts
+      |> fetch_or_prompt(:private_key, @private_key_prompt)
+      |> handle_prompt
 
     voter_share =
-      case fetch_or_prompt(opts, :voter_share, @voter_share_prompt) do
-        :back -> Process.exit(self(), :normal)
-        :quit -> Process.exit(self(), :normal)
-        value -> value
-      end
+      opts
+      |> fetch_or_prompt(:voter_share, @voter_share_prompt)
+      |> handle_prompt
+
+    fee_paid =
+      opts
+      |> fetch_or_prompt(:fee_paid, @fee_paid_prompt)
+      |> handle_prompt
+
+    payout_threshold =
+      opts
+      |> fetch_or_prompt(:payout_threshold, @payout_threshold_prompt)
+      |> handle_prompt
 
     %{
       delegate_address: delegate_address,
       delegate_payout_address: delegate_payout_address,
+      fee_paid: fee_paid,
       initial_block_height: initial_block_height,
       node_url: node_url,
+      payout_threshold: payout_threshold,
       private_key: private_key,
       voter_share: voter_share
     }

@@ -25,3 +25,4 @@ ark_tbw_delegate_server-*.tar
 config.json
 
 .cache
+/audit/

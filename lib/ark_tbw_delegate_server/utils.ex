@@ -1,12 +1,24 @@
 defmodule ArkTbwDelegateServer.Utils do
   @default_prompt "Please enter a value, q to quit or b to to back (qb)"
 
+  def atomize_key({key, value}, acc) when is_atom(key) do
+    Map.put(acc, key, value)
+  end
+
+  def atomize_key({key, value}, acc) when is_bitstring(key) do
+    Map.put(acc, String.to_atom(key), value)
+  end
+
+  def atomize_keys(map) do
+    Enum.reduce(map, %{}, &atomize_key/2)
+  end
+
   def clear do
     IO.ANSI.clear() |> IO.puts
   end
 
   def motd do
-    [:red, :bright, "
+    Bunt.puts([:red, :bright, "
     WXxd0NMMMMMMMMMMMMMMMMMMMMMMMMMMMMN0dxXM
     MMMMMMMMMMMMMMMMMNx", :white, ";;", :red, "xNMMMMMMMMMMMMMMMMM
     MMMMMMMMMMMMMMMMXo", :white, "'..,", :red, "oXWMMMMMMMMMMMMMMM
@@ -34,8 +46,7 @@ defmodule ArkTbwDelegateServer.Utils do
     ", :white, :faint, "ARK True Block Weight Delegate Manager
     Sponsored By: https://arkcommunity.fund
     Built By: arkoar.group delegate
-    "]
-    |> Bunt.puts
+    "])
   end
 
   def receive_input(message \\ "") do
