@@ -1,6 +1,6 @@
 defmodule ArkTbwDelegateServer.Delegate do
   alias ArkElixir.Models.Block
-  alias ArkTbwDelegateServer.{Cache, Logger}
+  alias ArkTbwDelegateServer.Cache
 
   import ArkTbwDelegateServer.Utils
 
@@ -26,7 +26,7 @@ defmodule ArkTbwDelegateServer.Delegate do
     opts
   end
 
-  def forged(%{client: client, delegate: delegate}) do
+  def forged(%{client: client, delegate: delegate} = opts) do
     cache_path = Cache.path(delegate.address, :forged)
 
     blocks = Cache.load(cache_path)
@@ -42,6 +42,7 @@ defmodule ArkTbwDelegateServer.Delegate do
       client
       |> fetch_blocks(delegate.public_key, blocks, cached_height)
       |> Enum.map(&to_block/1)
+      |> Enum.filter(&(&1.height > opts.initial_block_height))
       |> Enum.uniq_by(&(&1.height))
       |> Enum.sort_by(&(&1.height))
       |> Enum.reverse
@@ -65,7 +66,8 @@ defmodule ArkTbwDelegateServer.Delegate do
       client,
       generatorPublicKey: public_key,
       limit: @limit,
-      offset: offset
+      offset: offset,
+      orderBy: "height:desc"
     )
 
     if Enum.count(new_blocks) > 0 do

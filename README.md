@@ -8,7 +8,17 @@ Development by [arkoar.group delegate](https://arkoar.group)
 ARK True Block Weight Delegate Server is a community funded project for
 managing voter reward disbursements.
 
-Our focus is on making the delegate reward payment process as fast and easy as possible.
+Our focus is on making the delegate true block reward payment process as fast, accurate, and easy as possible.
+
+## Features
+- Hopper resistant
+- Accurate to the arktoshi
+- Rewards calculated by the weight of your wallet at the time the block was forged
+- Rolling Balances
+- Adjustable Payment Threshold
+- Adjustable Share Percentage
+- Automated payments
+- Blacklisting
 
 ## Delegate Usage
 ### Installation
@@ -40,10 +50,12 @@ mix escript.build
 
 ## Development Roadmap
 **If you would like to help fund feature development of this application you can do so through the ARK Community Fund.**
+- Core V2 Support
 - API(Time Traveling Balance & Payment History Search)
   - Get a wallets balance at any moment in time
   - Payment run history
   - Other voter and payment related data
+- Recurring payments
 - Twitter Integration(Automated payment run tweets)
 - Slack Integration(Automated payment messages)
 - Discord Integration(Automated payment messages)

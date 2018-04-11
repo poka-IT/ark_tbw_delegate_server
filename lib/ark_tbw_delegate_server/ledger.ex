@@ -6,7 +6,7 @@ defmodule ArkTbwDelegateServer.Ledger do
 
   alias ArkElixir.Models.{Account, Transaction}
   alias ArkElixir.Util.TransactionBuilder
-  alias ArkTbwDelegateServer.{Ledger, Logger}
+  alias ArkTbwDelegateServer.{Cache, Ledger, Logger}
 
   import ArkTbwDelegateServer.Utils
 
@@ -107,10 +107,16 @@ defmodule ArkTbwDelegateServer.Ledger do
   # private
 
   defp add_receiving_transactions(%{account: account} = payload, client) do
-    params = [recipientId: account.address]
-    transactions = fetch_transactions(client, params)
-    transactions = Enum.map(transactions, &to_transaction/1)
+    params = [orderBy: "timestamp:asc", recipientId: account.address]
+    cache_path = Cache.path(account.address, :receiving)
 
+    transactions = Cache.load(cache_path)
+    transactions =
+      client
+      |> fetch_transactions(params, transactions)
+      |> Enum.map(&to_transaction/1)
+
+    Cache.dump(cache_path, transactions)
     Map.put(payload, :transactions, transactions)
   end
 
@@ -118,14 +124,17 @@ defmodule ArkTbwDelegateServer.Ledger do
     %{account: account, transactions: existing} = payload,
     client
   ) do
-    params = [senderId: account.address]
+    params = [orderBy: "timestamp:asc", senderId: account.address]
+    cache_path = Cache.path(account.address, :sending)
+
+    transactions = Cache.load(cache_path)
     transactions =
       client
-      |> fetch_transactions(params)
+      |> fetch_transactions(params, transactions)
       |> Enum.map(&to_transaction/1)
 
+    Cache.dump(cache_path, transactions)
     new = Enum.reject(transactions, &Enum.member?(existing, &1))
-
     Map.put(payload, :transactions, new ++ existing)
   end
 
@@ -149,7 +158,7 @@ defmodule ArkTbwDelegateServer.Ledger do
     Map.put(index, :multisignature, [transaction] ++ index.multisignature)
   end
 
-  defp fetch_transactions(client, params, transactions \\ []) do
+  defp fetch_transactions(client, params, transactions) do
     offset = Enum.count(transactions)
     actual_params = params ++ [limit: 50, offset: offset]
 
@@ -211,7 +220,11 @@ defmodule ArkTbwDelegateServer.Ledger do
   end
 
   defp sort_by_time(%{transactions: transactions} = payload) do
-    sorted = Enum.sort_by(transactions, &(&1.timestamp))
+    sorted =
+      transactions
+      |> Enum.sort_by(&(&1.timestamp))
+      |> Enum.uniq_by(&(&1.id))
+
     Map.put(payload, :transactions, sorted)
   end
 

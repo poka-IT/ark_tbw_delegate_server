@@ -45,15 +45,16 @@ defmodule ArkTbwDelegateServer.CLI do
     "WARNING: Your configuration was not saved."
 
   @delegate_address_prompt "Please enter the address of the delegate you " <>
-    "would like to scan."
+    "would like to scan"
 
   @delegate_payout_address_prompt "Please enter the address you would like " <>
-    "to receive your delegate share at."
+    "to receive your delegate share at"
 
-  @fee_paid_prompt "Do you cover transaction fees for disbursement payments?(Y/N)"
+  @fee_paid_prompt "Do you cover transaction fees for disbursement " <>
+    "payments? (Y/N)"
 
   @initial_block_height_prompt "Please enter the starting block height. " <>
-    "If you're not sure, enter the height of the last block you paid out. "
+    "If you're not sure, enter the height of the last block you paid out"
 
   @invalid_voter_share_message "Please enter a value between 0 and 1..."
 
@@ -61,13 +62,13 @@ defmodule ArkTbwDelegateServer.CLI do
     "4534ffa23"
 
   @node_url_prompt "Please enter the address of the node you'd like to " <>
-    "scan. Please be friendly to the ecosystem and use your own."
+    "scan. Please be friendly to the ecosystem and use your own"
 
   @payout_threshold_prompt "Please enter the minimum balance required for " <>
-    "a reward disbursement. (example: 0.3)"
+    "a reward disbursement (example: 0.3)"
 
-  @private_key_prompt "Please enter the private key of your delegate account " <>
-    "for reward disbursements."
+  @private_key_prompt "Please enter the private key of your delegate " <>
+    "account for reward disbursements"
 
   @switches [
     config: :string,
@@ -99,7 +100,7 @@ defmodule ArkTbwDelegateServer.CLI do
   ]
 
   @voter_share_prompt "Please enter the percentage share that voters " <>
-    "receive expressed as a decimal. (example: 0.95)"
+    "receive expressed as a decimal (example: 0.95)"
 
   import ArkTbwDelegateServer.Utils
 
@@ -182,7 +183,7 @@ Configuration Options:
     -n, --node-url                    delegate node URL
     -p, --delegate-payout-address     your delegate payout ADDRESS
     -s, --voter-share                 % to share with voters (eg. 0.9)
-    -t, --payout-threshold            the minimum ARKTOSHI due before disbursement
+    -t, --payout-threshold            the minimum ARK due before disbursement
 
         --help,                       this help menu
     "])
