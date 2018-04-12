@@ -147,6 +147,18 @@ defmodule ArkTbwDelegateServer.CLI do
     |> Enum.into(%{})
   end
 
+  defp fetch_network_address(%{delegate_address: "D" <> _remainer}) do
+    ArkElixir.Client.devnet_network_address()
+  end
+
+  defp fetch_network_address(%{delegate_address: "A" <> _remainer}) do
+    ArkElixir.Client.mainnet_network_address()
+  end
+
+  defp fetch_network_address(_) do
+    raise "Invalid delegate address! Please remove config.json and restart."
+  end
+
   defp fetch_or_prompt(opts, key, prompt) do
     case Map.get(opts, key) do
       nil -> receive_input(prompt, "")
@@ -207,7 +219,7 @@ Configuration Options:
   defp load_api_client(opts) do
     client = ArkElixir.Client.new(%{
       nethash: @mainnet_nethash,
-      network_address: ArkElixir.Client.mainnet_network_address(),
+      network_address: fetch_network_address(opts),
       url: opts.node_url,
       version: "1.1.1"
     })
