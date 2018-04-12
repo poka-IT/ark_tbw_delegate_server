@@ -95,10 +95,6 @@ defmodule ArkTbwDelegateServer.CLI do
     t: :payout_threshold
   ]
 
-  @switch_defaults [
-    config: "./config.json"
-  ]
-
   @voter_share_prompt "Please enter the percentage share that voters " <>
     "receive expressed as a decimal (example: 0.95)"
 
@@ -117,8 +113,7 @@ defmodule ArkTbwDelegateServer.CLI do
       opts = extract_options(args)
       config = load_config(opts)
 
-      @switch_defaults
-      |> Enum.into(%{})
+      %{}
       |> Map.merge(config) # Merge the config file options
       |> Map.merge(opts) # Merge the command line options
       |> prompt_for_missing_options # Ask for missing options
@@ -134,7 +129,14 @@ defmodule ArkTbwDelegateServer.CLI do
   # private
 
   defp config_file_path(opts) do
-    Map.get(opts, :config, @switch_defaults[:config])
+    if Map.has_key?(opts, :config) do
+      Map.get(opts, :config)
+    else
+      home = System.user_home()
+      path = "#{home}/.atbw"
+      File.mkdir_p!(path)
+      "#{path}/config.json"
+    end |> Logger.warn
   end
 
   defp create_audit_logger(opts) do
@@ -214,7 +216,7 @@ defmodule ArkTbwDelegateServer.CLI do
 
   defp help do
    Bunt.puts([:white, "
-Usage: ark_tbw_delegate_server <command>
+Usage: atbw <command>
 
 Configuration Options:
 
@@ -305,7 +307,7 @@ Configuration Options:
   end
 
   defp save_config(config, opts) do
-    file_path = Map.get(opts, :config, @switch_defaults[:config])
+    file_path = config_file_path(opts)
     json = Poison.encode!(config)
 
     case File.open(file_path, [:write]) do
