@@ -136,7 +136,7 @@ defmodule ArkTbwDelegateServer.CLI do
       path = "#{home}/.atbw"
       File.mkdir_p!(path)
       "#{path}/config.json"
-    end |> Logger.warn
+    end
   end
 
   defp create_audit_logger(opts) do

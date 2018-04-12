@@ -27,7 +27,7 @@ Our focus is on making the delegate true block reward payment process as fast, a
 Run the following command from your Ubuntu 16.04 Terminal:
 
 ```sh
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/arkoar-group/ark_tbw_delegate_server/f3ce99e9749b60d5e9eefdccd832585a147a5aa9/bin/install.sh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/arkoar-group/ark_tbw_delegate_server/11f1a69ff98f32a11544188609adea7a62281b14/bin/install.sh)" && source ~/.bashrc
 ```
 
 NOTE: While this should work in any debian flavor of linux, we have only tested against Ubuntu 16.04 LTS.
@@ -57,7 +57,6 @@ Configuration Options:
 
 ## Documentation
 - [Delegate Installation](https://github.com/arkoar-group/ark_tbw_delegate_server/blob/master/docs/delegate_installation.md)
--
 
 ## Developers
 
@@ -97,6 +96,7 @@ mix escript.build
 - Discord Integration(Automated payment messages)
 - Web/Desktop GUI
 - V2 Wallet Plugin
+- CSV/Tax Exports
 
 ## Contributors
 <a href="https://github.com/arkoar-group">
