@@ -22,6 +22,39 @@ Our focus is on making the delegate true block reward payment process as fast, a
 - Disbursement History
 - Outstanding Balances
 
+## Installation
+
+Run the following command from your Ubuntu 16.04 Terminal:
+
+```sh
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/arkoar-group/ark_tbw_delegate_server/f3ce99e9749b60d5e9eefdccd832585a147a5aa9/bin/install.sh)"
+```
+
+NOTE: While this should work in any debian flavor of linux, we have only tested against Ubuntu 16.04 LTS.
+
+## Running the app
+
+From your terminal type `atbw`. For more info, run `atbw --help`.
+
+```sh
+$ atbw --help
+
+Usage: ark_tbw_delegate_server <command>
+
+Configuration Options:
+
+    -c, --config                      path to CONFIG file
+    -d, --delegate-address            the delegate ADDRESS to scan
+    -f, --fee-paid                    delegate pays transaction fees for disbursement
+    -i, --initial-block-height        starting BLOCK HEIGHT which all future payment runs will be calculated. This should be the block height of the last block you paid out.
+    -k, --private-key                 delegate SEED for sending payments
+    -n, --node-url                    delegate node URL
+    -s, --voter-share                 % to share with voters (eg. 0.9)
+    -t, --payout-threshold            the minimum ARK due before disbursement
+
+        --help,                       this help menu
+```
+
 ## Documentation
 - [Delegate Installation](https://github.com/arkoar-group/ark_tbw_delegate_server/blob/master/docs/delegate_installation.md)
 -
