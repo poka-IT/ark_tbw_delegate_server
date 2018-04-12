@@ -84,8 +84,8 @@ defmodule ArkTbwDelegateServer.Utils do
     "])
   end
 
-  def receive_input(message \\ "") do
-    input = "    #{message}: " |> IO.gets |> String.trim
+  def receive_input(message \\ "", prefix \\ "    ") do
+    input = "#{prefix}#{message}: " |> IO.gets |> String.trim
 
     case input do
       "" ->

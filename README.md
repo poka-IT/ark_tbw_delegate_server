@@ -18,10 +18,14 @@ Our focus is on making the delegate true block reward payment process as fast, a
 - Adjustable Payment Threshold
 - Adjustable Share Percentage
 - Automated payments
-- Blacklisting
+- Audit Log
+- Disbursement History
+- Outstanding Balances
+- CSV Export
 
-## Delegate Usage
-### Installation
+## Documentation
+- [Delegate Installation](https://github.com/arkoar-group/ark_tbw_delegate_server/blob/master/docs/delegate_installation.md)
+-
 
 ## Developers
 

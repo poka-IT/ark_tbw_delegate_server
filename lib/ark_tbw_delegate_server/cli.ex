@@ -47,9 +47,6 @@ defmodule ArkTbwDelegateServer.CLI do
   @delegate_address_prompt "Please enter the address of the delegate you " <>
     "would like to scan"
 
-  @delegate_payout_address_prompt "Please enter the address you would like " <>
-    "to receive your delegate share at"
-
   @fee_paid_prompt "Do you cover transaction fees for disbursement " <>
     "payments? (Y/N)"
 
@@ -152,7 +149,7 @@ defmodule ArkTbwDelegateServer.CLI do
 
   defp fetch_or_prompt(opts, key, prompt) do
     case Map.get(opts, key) do
-      nil -> receive_input(prompt)
+      nil -> receive_input(prompt, "")
       value -> to_string(value)
     end
   end
@@ -200,7 +197,6 @@ Configuration Options:
     -i, --initial-block-height        starting BLOCK HEIGHT which all future payment runs will be calculated. This should be the block height of the last block you paid out.
     -k, --private-key                 delegate SEED for sending payments
     -n, --node-url                    delegate node URL
-    -p, --delegate-payout-address     your delegate payout ADDRESS
     -s, --voter-share                 % to share with voters (eg. 0.9)
     -t, --payout-threshold            the minimum ARK due before disbursement
 
@@ -239,14 +235,6 @@ Configuration Options:
       |> fetch_or_prompt(:delegate_address, @delegate_address_prompt)
       |> handle_prompt
 
-    delegate_payout_address =
-      opts
-      |> fetch_or_prompt(
-        :delegate_payout_address,
-        @delegate_payout_address_prompt
-      )
-      |> handle_prompt
-
     initial_block_height =
       opts
       |> fetch_or_prompt(:initial_block_height, @initial_block_height_prompt)
@@ -280,7 +268,6 @@ Configuration Options:
 
     %{
       delegate_address: delegate_address,
-      delegate_payout_address: delegate_payout_address,
       fee_paid: fee_paid,
       initial_block_height: initial_block_height,
       node_url: node_url,
