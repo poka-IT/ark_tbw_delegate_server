@@ -39,7 +39,7 @@ From your terminal type `atbw`. For more info, run `atbw --help`.
 ```sh
 $ atbw --help
 
-Usage: ark_tbw_delegate_server <command>
+Usage: atbw <command>
 
 Configuration Options:
 
