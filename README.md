@@ -21,7 +21,6 @@ Our focus is on making the delegate true block reward payment process as fast, a
 - Audit Log
 - Disbursement History
 - Outstanding Balances
-- CSV Export
 
 ## Documentation
 - [Delegate Installation](https://github.com/arkoar-group/ark_tbw_delegate_server/blob/master/docs/delegate_installation.md)

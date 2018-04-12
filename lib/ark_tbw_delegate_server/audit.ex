@@ -21,8 +21,9 @@ defmodule ArkTbwDelegateServer.Audit do
   # private
 
   def dir do
-    path = "./audit"
-    File.mkdir(path)
+    home = System.user_home()
+    path = "#{home}/.atbw/audit"
+    File.mkdir_p!(path)
     path
   end
 end
