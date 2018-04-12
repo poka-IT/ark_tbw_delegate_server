@@ -47,6 +47,9 @@ defmodule ArkTbwDelegateServer.CLI do
   @delegate_address_prompt "Please enter the address of the delegate you " <>
     "would like to scan"
 
+  @devnet_nethash "578e820911f24e039733b45e4882b73e301f813a0d2c31330dafda8" <>
+    "4534ffa23"
+
   @fee_paid_prompt "Do you cover transaction fees for disbursement " <>
     "payments? (Y/N)"
 
@@ -55,8 +58,8 @@ defmodule ArkTbwDelegateServer.CLI do
 
   @invalid_voter_share_message "Please enter a value between 0 and 1..."
 
-  @mainnet_nethash "578e820911f24e039733b45e4882b73e301f813a0d2c31330dafda8" <>
-    "4534ffa23"
+  @mainnet_nethash "6e84d08bd299ed97c212c886c98a57e36545c8f5d645ca7eeae63a8b" <>
+    "d62d8988"
 
   @node_url_prompt "Please enter the address of the node you'd like to " <>
     "scan. Please be friendly to the ecosystem and use your own"
@@ -123,6 +126,7 @@ defmodule ArkTbwDelegateServer.CLI do
       |> save_config(opts) # Save the config
       |> create_audit_logger
       |> load_api_client
+      |> Logger.warn
       |> load_delegate_public_key
       |> MainMenu.run
     end
@@ -156,6 +160,18 @@ defmodule ArkTbwDelegateServer.CLI do
   end
 
   defp fetch_network_address(_) do
+    raise "Invalid delegate address! Please remove config.json and restart."
+  end
+
+  defp fetch_network_hash(%{delegate_address: "D" <> _remainder}) do
+    @devnet_nethash
+  end
+
+  defp fetch_network_hash(%{delegate_address: "A" <> _remainder}) do
+    @mainnet_nethash
+  end
+
+  defp fetch_network_hash(_) do
     raise "Invalid delegate address! Please remove config.json and restart."
   end
 
@@ -218,7 +234,7 @@ Configuration Options:
 
   defp load_api_client(opts) do
     client = ArkElixir.Client.new(%{
-      nethash: @mainnet_nethash,
+      nethash: fetch_network_hash(opts),
       network_address: fetch_network_address(opts),
       url: opts.node_url,
       version: "1.1.1"
