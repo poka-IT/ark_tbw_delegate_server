@@ -22,7 +22,7 @@ defmodule ArkTbwDelegateServer.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:ark_elixir, path: "../ARK-Elixir"},
+      {:ark_elixir, git: "https://github.com/arkoar-group/ARK-Elixir", branch: "refactor/tesla"},
       {:bunt, "~> 0.1"},
       {:decimal, "~> 1.0"},
       {:poison, "~> 3.1"},

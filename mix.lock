@@ -1,4 +1,5 @@
 %{
+  "ark_elixir": {:git, "https://github.com/arkoar-group/ARK-Elixir", "c7ac87a5d110fdbab7c90051be408c1c9e0d2338", [branch: "refactor/tesla"]},
   "base58": {:hex, :base58, "0.1.0", "ab34d1a4ef0f11ac61b9f5ad54c35826c3bdc541688a2f95183417272aa1fcfc", [:mix], [], "hexpm"},
   "bunt": {:hex, :bunt, "0.2.0", "951c6e801e8b1d2cbe58ebbd3e616a869061ddadcc4863d0a2182541acae9a38", [:mix], [], "hexpm"},
   "certifi": {:hex, :certifi, "2.3.1", "d0f424232390bf47d82da8478022301c561cf6445b5b5fb6a84d49a9e76d2639", [:rebar3], [{:parse_trans, "3.2.0", [hex: :parse_trans, repo: "hexpm", optional: false]}], "hexpm"},
