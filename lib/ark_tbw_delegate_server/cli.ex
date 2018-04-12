@@ -126,7 +126,6 @@ defmodule ArkTbwDelegateServer.CLI do
       |> save_config(opts) # Save the config
       |> create_audit_logger
       |> load_api_client
-      |> Logger.warn
       |> load_delegate_public_key
       |> MainMenu.run
     end
