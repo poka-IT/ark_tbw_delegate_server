@@ -94,12 +94,16 @@ defmodule ArkTbwDelegateServer.Disbursements do
   # private
 
   defp confirm_and_disburse(statements, opts) do
-    disburse = Enum.filter(statements, &(&1.type == :disbursed))
+    disbursable = Enum.filter(statements, &(&1.type == :disbursed))
+    count = Enum.count(disbursable)
 
-    if Enum.count(disburse) > 0 do
-      case receive_input("Would you like to disburse the funds? (Y/N)") do
-        "Y" -> disburse(statements, opts)
-        "y" -> disburse(statements, opts)
+    if Enum.count(disbursable) > 0 do
+      message =
+        "Would you like to disburse the funds to #{count} accounts? (Y/N)"
+
+      case receive_input(message) do
+        "Y" -> disburse(disbursable, opts)
+        "y" -> disburse(disbursable, opts)
         _ -> :noop
       end
     else
