@@ -157,12 +157,31 @@ defmodule ArkTbwDelegateServer.CLI do
     end
   end
 
+  defp handle_fee_paid_prompt(:back) do
+    shutdown()
+  end
+
+  defp handle_fee_paid_prompt(:quit) do
+    shutdown()
+  end
+
+  defp handle_fee_paid_prompt(value) do
+    str = "#{value}"
+    cond do
+      Regex.match?(~r/true/i, str) -> true
+      Regex.match?(~r/yes/i, str) -> true
+      str == "y" -> true
+      str == "Y" -> true
+      true -> false
+    end
+  end
+
   defp handle_prompt(:back) do
-    Process.exit(self(), :normal)
+    shutdown()
   end
 
   defp handle_prompt(:quit) do
-    Process.exit(self(), :normal)
+    shutdown()
   end
 
   defp handle_prompt(value) do
@@ -252,7 +271,7 @@ Configuration Options:
     fee_paid =
       opts
       |> fetch_or_prompt(:fee_paid, @fee_paid_prompt)
-      |> handle_prompt
+      |> handle_fee_paid_prompt
 
     payout_threshold =
       opts

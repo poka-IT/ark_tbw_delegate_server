@@ -24,7 +24,6 @@ defmodule ArkTbwDelegateServer.MixProject do
     [
       {:ark_elixir, path: "../ARK-Elixir"},
       {:bunt, "~> 0.1"},
-      {:cli_spinners, "~> 0.1.0"},
       {:decimal, "~> 1.0"},
       {:poison, "~> 3.1"},
       {:progress_bar, "> 0.0.0"}

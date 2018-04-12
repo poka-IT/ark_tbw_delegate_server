@@ -1,4 +1,6 @@
 defmodule ArkTbwDelegateServer.Utils do
+  import IO.ANSI, only: [blue: 0, bright: 0, green: 0, faint: 0]
+
   @default_prompt "Please enter a value, q to quit or b to to back (qb)"
 
   def atomize_key({key, value}, acc) when is_atom(key) do
@@ -15,6 +17,39 @@ defmodule ArkTbwDelegateServer.Utils do
 
   def clear do
     IO.ANSI.clear() |> IO.puts
+  end
+
+  def loading(
+    loading_message \\ "Loading",
+    loaded_message \\ "Loaded",
+    loading_color \\ blue(),
+    loaded_color \\ blue(),
+    bright \\ true,
+    action
+  ) do
+    text =
+      if bright do
+        [bright(), loading_color, "#{loading_message}..."]
+      else
+        [faint(), loading_color, "#{loading_message}..."]
+      end
+
+    done =
+      if bright do
+        [green(), bright(), "    ✓", loaded_color, " #{loaded_message}"]
+      else
+        [green(), faint(), "    ✓", loaded_color, " #{loaded_message}"]
+      end
+
+    format = [
+      frames: ["    ⠋", "    ⠙", "    ⠹", "    ⠸", "    ⠼", "    ⠴", "    ⠦", "    ⠧", "    ⠇", "    ⠏"],
+      text: text,
+      done: done,
+      spinner_color: green(),
+      interval: 100,  # milliseconds between frames
+    ]
+
+    ProgressBar.render_spinner(format, action)
   end
 
   def motd do
@@ -43,7 +78,7 @@ defmodule ArkTbwDelegateServer.Utils do
     ";NMMW0o", :white, ":", :red, "xNMM
     WXxd0NMMMMMMMMMMMMMMMMMMMMMMMMMMMMN0dxXM
 
-    ", :white, :faint, "ARK True Block Weight Delegate Manager
+    ", :white, :faint, "ARK True Block Weight Delegate Server
     Sponsored By: https://arkcommunity.fund
     Built By: arkoar.group delegate
     "])
@@ -62,5 +97,9 @@ defmodule ArkTbwDelegateServer.Utils do
       value ->
         value
     end
+  end
+
+  def shutdown do
+    Process.exit(self(), :normal)
   end
 end

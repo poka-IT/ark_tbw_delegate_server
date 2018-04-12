@@ -2,6 +2,7 @@ defmodule ArkTbwDelegateServer.Voters do
   alias ArkTbwDelegateServer.{Logger, Voter}
 
   def all(%{client: client, delegate_public_key: public_key}) do
+    IO.puts("  ")
     case ArkElixir.Delegate.voters(client, public_key) do
       {:ok, voters} ->
         Enum.each(voters, &Voter.display/1)

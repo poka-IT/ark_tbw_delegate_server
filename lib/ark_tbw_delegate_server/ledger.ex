@@ -27,6 +27,10 @@ defmodule ArkTbwDelegateServer.Ledger do
     build(account, client)
   end
 
+  def disbursements(%__MODULE__{transactions: transactions}) do
+    Enum.filter(transactions, &is_disbursement?/1)
+  end
+
   # Public API
 
   def balance(%Ledger{account: %Account{balance: balance}}) do
