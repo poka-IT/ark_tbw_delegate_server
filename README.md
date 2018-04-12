@@ -56,7 +56,8 @@ Configuration Options:
 ```
 
 ## Documentation
-- [Delegate Installation](https://github.com/arkoar-group/ark_tbw_delegate_server/blob/master/docs/delegate_installation.md)
+
+https://medium.com/arkoar-group/ark-true-block-weight-delegate-server-1ea5a60233f6
 
 ## Developers
 
