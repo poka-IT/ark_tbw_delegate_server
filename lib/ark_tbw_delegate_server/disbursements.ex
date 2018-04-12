@@ -1,7 +1,7 @@
 defmodule ArkTbwDelegateServer.Disbursements do
   @div Decimal.new(100000000.0)
   @fee Decimal.new(0.1)
-  @throttle 10000 # 10 seconds
+  @throttle 5000 # 5 seconds
 
   import ArkTbwDelegateServer.Utils
   import ArkTbwDelegateServer.Calculations
@@ -127,6 +127,8 @@ defmodule ArkTbwDelegateServer.Disbursements do
       "    Press CTRL-C in the next 10 seconds to abort\n"
     ])
 
+    Process.sleep(@throttle)
+
     Enum.reduce(statements, 0, fn(statement, counter) ->
       arktoshis =
         statement
@@ -137,7 +139,7 @@ defmodule ArkTbwDelegateServer.Disbursements do
 
       message = "(#{counter+1}/#{count}) Disbursing Ѧ " <>
         "#{Decimal.to_string(statement.amount, :normal)} (#{arktoshis} " <>
-        "arktoshi) to #{statement.ledger.account.address} in 10 seconds"
+        "arktoshi) to #{statement.ledger.account.address} in 5 seconds"
 
       Audit.write(opts.audit, message)
       count_string = " (#{counter}/#{count})"
