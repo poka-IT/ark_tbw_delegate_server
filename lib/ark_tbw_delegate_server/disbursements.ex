@@ -164,9 +164,9 @@ defmodule ArkTbwDelegateServer.Disbursements do
 
       Audit.write(opts.audit, message)
       count_string = " (#{counter}/#{count})"
-      ProgressBar.render(counter, count, [right: count_string] ++ format)
 
       Process.sleep(@throttle)
+      ProgressBar.render(counter, count, [right: count_string] ++ format)
 
       Audit.write(opts.audit, "Generating transaction...")
 
@@ -186,12 +186,14 @@ defmodule ArkTbwDelegateServer.Disbursements do
       Audit.write(opts.audit, transaction)
 
       Enum.each(peers, fn(peer) ->
-        result = ArkElixir.post(
-          peer,
-          "peer/transactions",
-          %{transactions: [transaction]}
-        )
-        Audit.write(opts.audit, result)
+        Kernel.spawn(fn() ->
+          result = ArkElixir.post(
+            peer,
+            "peer/transactions",
+            %{transactions: [transaction]}
+          )
+          Audit.write(opts.audit, result)
+        end)
       end)
 
       Audit.write(opts.audit, "Transaction sent")
@@ -200,6 +202,7 @@ defmodule ArkTbwDelegateServer.Disbursements do
     end)
 
     count_string = " (#{count}/#{count})"
+    Process.sleep(@throttle)
     ProgressBar.render(count, count, [right: count_string] ++ format)
   end
 
