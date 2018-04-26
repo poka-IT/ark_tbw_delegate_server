@@ -148,7 +148,13 @@ defmodule ArkTbwDelegateServer.Disbursements do
 
     Audit.write(opts.audit, "Fetching peer list")
     {:ok, peers} = ArkElixir.Peer.peers(opts.client)
-    peers = Enum.map(peers, &client_from_peer(&1, opts)) ++ [opts.client]
+
+    peers =
+      peers
+      |> sanitize_peers
+      |> Enum.map(&client_from_peer(&1, opts))
+
+    peers = [opts.client] ++ peers
 
     Enum.reduce(statements, 0, fn(statement, counter) ->
       arktoshis =
@@ -262,5 +268,14 @@ defmodule ArkTbwDelegateServer.Disbursements do
       Bunt.puts([:white, :bright, "    #{message}"])
       Audit.write(opts.audit, message)
     end)
+  end
+
+  defp sanitize_peers(peers) do
+    filter = fn
+      %{ip: "127.0.0.1"} -> false
+      _ -> true
+    end
+
+    Enum.filter(peers, filter)
   end
 end
