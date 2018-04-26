@@ -120,6 +120,8 @@ defmodule ArkTbwDelegateServer.CLI do
       |> validate_share
       |> save_config(opts) # Save the config
       |> create_audit_logger
+      |> fetch_network_address
+      |> fetch_network_hash
       |> load_api_client
       |> load_delegate_public_key
       |> MainMenu.run
@@ -152,24 +154,24 @@ defmodule ArkTbwDelegateServer.CLI do
     |> Enum.into(%{})
   end
 
-  defp fetch_network_address(%{delegate_address: "D" <> _remainer}) do
-    ArkElixir.Client.devnet_network_address()
+  defp fetch_network_address(%{delegate_address: "D" <> _remainer} = opts) do
+    Map.put(opts, :network_address, ArkElixir.Client.devnet_network_address())
   end
 
-  defp fetch_network_address(%{delegate_address: "A" <> _remainer}) do
-    ArkElixir.Client.mainnet_network_address()
+  defp fetch_network_address(%{delegate_address: "A" <> _remainer} = opts) do
+    Map.put(opts, :network_address, ArkElixir.Client.mainnet_network_address())
   end
 
   defp fetch_network_address(_) do
     raise "Invalid delegate address! Please remove config.json and restart."
   end
 
-  defp fetch_network_hash(%{delegate_address: "D" <> _remainder}) do
-    @devnet_nethash
+  defp fetch_network_hash(%{delegate_address: "D" <> _remainder} = opts) do
+    Map.put(opts, :nethash, @devnet_nethash)
   end
 
-  defp fetch_network_hash(%{delegate_address: "A" <> _remainder}) do
-    @mainnet_nethash
+  defp fetch_network_hash(%{delegate_address: "A" <> _remainder} = opts) do
+    Map.put(opts, :nethash, @mainnet_nethash)
   end
 
   defp fetch_network_hash(_) do
@@ -235,8 +237,8 @@ Configuration Options:
 
   defp load_api_client(opts) do
     client = ArkElixir.Client.new(%{
-      nethash: fetch_network_hash(opts),
-      network_address: fetch_network_address(opts),
+      nethash: opts.nethash,
+      network_address: opts.network_address,
       url: opts.node_url,
       version: "1.1.1"
     })

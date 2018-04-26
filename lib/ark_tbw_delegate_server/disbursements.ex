@@ -6,6 +6,7 @@ defmodule ArkTbwDelegateServer.Disbursements do
   import ArkTbwDelegateServer.Utils
   import ArkTbwDelegateServer.Calculations
 
+  alias ArkElixir.Client
   alias ArkElixir.Util.TransactionBuilder
   alias ArkTbwDelegateServer.{Audit, Delegate, Ledger}
 
@@ -93,6 +94,17 @@ defmodule ArkTbwDelegateServer.Disbursements do
 
   # private
 
+  defp client_from_peer(peer, opts) do
+    Client.new(%{
+      ip: peer.ip,
+      nethash: opts.nethash,
+      network_address: opts.network_address,
+      port: peer.port,
+      protocol: "https",
+      version: peer.version
+    })
+  end
+
   defp confirm_and_disburse(statements, opts) do
     disbursable = Enum.filter(statements, &(&1.type == :disbursed))
     count = Enum.count(disbursable)
@@ -129,6 +141,10 @@ defmodule ArkTbwDelegateServer.Disbursements do
 
     Process.sleep(@throttle)
 
+    Audit.write(opts.audit, "Fetching peer list")
+    {:ok, peers} = ArkElixir.Peer.peers(opts.client)
+    peers = Enum.map(peers, &client_from_peer(&1, opts)) ++ [opts.client]
+
     Enum.reduce(statements, 0, fn(statement, counter) ->
       arktoshis =
         statement
@@ -147,14 +163,33 @@ defmodule ArkTbwDelegateServer.Disbursements do
 
       Process.sleep(@throttle)
 
-      result = ArkElixir.Transaction.create(
-        opts.client,
-        statement.ledger.account.address,
-        arktoshis,
-        "#{opts.delegate.username} | payout to height #{statement.height}",
-        opts.private_key
-      )
-      Audit.write(opts.audit, result)
+      Audit.write(opts.audit, "Generating transaction...")
+
+      transaction =
+        statement
+        |> Map.get(:ledger)
+        |> Map.get(:account)
+        |> Map.get(:address)
+        |> TransactionBuilder.create_transfer(
+          arktoshis,
+          "#{opts.delegate.username} | payout to height #{statement.height}",
+          opts.private_key,
+          nil
+        )
+        |> TransactionBuilder.transaction_to_params
+
+      Audit.write(opts.audit, transaction)
+
+      Enum.each(peers, fn(peer) ->
+        result = ArkElixir.post(
+          peer,
+          "peer/transactions",
+          %{transactions: [transaction]}
+        )
+        Audit.write(opts.audit, result)
+      end)
+
+      Audit.write(opts.audit, "Transaction sent")
 
       counter + 1
     end)
