@@ -19,6 +19,17 @@ defmodule ArkTbwDelegateServer.MainMenu do
 
   # private
 
+  defp catch_invalid_entry(:invalid, opts) do
+    "Invalid entry. Please make your selection (012345bq)"
+    |> receive_input
+    |> execute(opts)
+    |> catch_invalid_entry(opts)
+  end
+
+  defp catch_invalid_entry(result, _opts) do
+    result
+  end
+
   defp clear_cache do
     clear()
 
@@ -37,6 +48,13 @@ defmodule ArkTbwDelegateServer.MainMenu do
     end
   end
 
+  defp display(%{command: command} = opts) do
+    case execute(command, opts) do
+      :invalid -> IO.puts("\n    Invalid command. Exiting.")
+      _result -> IO.puts("\n    Done. Goodbye. 👋")
+    end
+  end
+
   defp display(opts) do
     [:green, :bright, "
     Main Menu
@@ -52,7 +70,17 @@ defmodule ArkTbwDelegateServer.MainMenu do
     "]
     |> Bunt.puts
 
-    case receive_input("Please make your selection") do
+    "Please make your selection"
+    |> receive_input
+    |> execute(opts)
+    |> catch_invalid_entry(opts)
+
+    IO.gets("\n\n    Press enter to return to the main menu.")
+    run(opts)
+  end
+
+  defp execute(selection, opts) do
+    case selection do
       :back -> run(opts)
       :quit -> Process.exit(self(), :normal)
 
@@ -63,10 +91,7 @@ defmodule ArkTbwDelegateServer.MainMenu do
       "4" -> Voters.all(opts)
       "5" -> Process.exit(self(), :normal)
 
-      _ -> receive_input("Invalid entry. Please make your selection (012345bq)")
+      _ -> :invalid
     end
-
-    IO.gets("\n\n    Press enter to return to the main menu.")
-    run(opts)
   end
 end

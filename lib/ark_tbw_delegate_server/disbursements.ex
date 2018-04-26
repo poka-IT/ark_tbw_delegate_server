@@ -113,10 +113,15 @@ defmodule ArkTbwDelegateServer.Disbursements do
       message =
         "Would you like to disburse the funds to #{count} accounts? (Y/N)"
 
-      case receive_input(message) do
-        "Y" -> disburse(disbursable, opts)
-        "y" -> disburse(disbursable, opts)
-        _ -> :noop
+      if opts.force do
+        IO.puts("    #{message}: Y")
+        disburse(disbursable, opts)
+      else
+        case receive_input(message) do
+          "Y" -> disburse(disbursable, opts)
+          "y" -> disburse(disbursable, opts)
+          _ -> :noop
+        end
       end
     else
       Bunt.puts([:orange, :bright, "    No new blocks found"])

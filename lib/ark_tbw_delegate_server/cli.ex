@@ -54,7 +54,7 @@ defmodule ArkTbwDelegateServer.CLI do
     "payments? (Y/N)"
 
   @initial_block_height_prompt "Please enter the starting block height. " <>
-    "If you're not sure, enter the height of the last block you paid out"
+    "This is either the height of the last block you paid out or '0'"
 
   @invalid_voter_share_message "Please enter a value between 0 and 1..."
 
@@ -71,11 +71,13 @@ defmodule ArkTbwDelegateServer.CLI do
     "account for reward disbursements"
 
   @switches [
+    command: :string,
     config: :string,
     delegate_address: :string,
     delegate_payout_address: :string,
     help: nil,
     fee_paid: :string,
+    force: nil,
     initial_block_height: :string,
     node_url: :string,
     payout_threshold: :string,
@@ -86,6 +88,7 @@ defmodule ArkTbwDelegateServer.CLI do
   @switch_aliases [
     c: :config,
     d: :delegate_address,
+    e: :command,
     f: :fee_paid,
     i: :initial_block_height,
     k: :private_key,
@@ -119,6 +122,8 @@ defmodule ArkTbwDelegateServer.CLI do
       |> prompt_for_missing_options # Ask for missing options
       |> validate_share
       |> save_config(opts) # Save the config
+      |> add_command(opts)
+      |> add_force(args)
       |> create_audit_logger
       |> fetch_network_address
       |> fetch_network_hash
@@ -129,6 +134,22 @@ defmodule ArkTbwDelegateServer.CLI do
   end
 
   # private
+
+  defp add_command(config, %{command: command}) do
+    Map.put(config, :command, command)
+  end
+
+  defp add_command(config, _opts) do
+    config
+  end
+
+  defp add_force(config, args) do
+    if Enum.member?(args, "--force") do
+      Map.put(config, :force, true)
+    else
+      Map.put(config, :force, false)
+    end
+  end
 
   defp config_file_path(opts) do
     if Map.has_key?(opts, :config) do
@@ -224,13 +245,15 @@ Configuration Options:
 
     -c, --config                      path to CONFIG file
     -d, --delegate-address            the delegate ADDRESS to scan
+    -e, --command                     the number of the menu option you would like to auto-run
     -f, --fee-paid                    delegate pays transaction fees for disbursement
-    -i, --initial-block-height        starting BLOCK HEIGHT which all future payment runs will be calculated. This should be the block height of the last block you paid out.
+    -i, --initial-block-height        starting BLOCK HEIGHT from which all future payment runs will be calculated. This should be the block height of the last block you paid out or '0'.
     -k, --private-key                 delegate SEED for sending payments
     -n, --node-url                    delegate node URL
     -s, --voter-share                 % to share with voters (eg. 0.9)
     -t, --payout-threshold            the minimum ARK due before disbursement
 
+        --force,                      skips the prompts and accepts all the things (for use with cron)
         --help,                       this help menu
     "])
   end
