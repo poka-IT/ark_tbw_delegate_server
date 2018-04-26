@@ -100,7 +100,7 @@ defmodule ArkTbwDelegateServer.Disbursements do
       nethash: opts.nethash,
       network_address: opts.network_address,
       port: peer.port,
-      protocol: "https",
+      protocol: "http", # :(
       version: peer.version
     })
   end
