@@ -30,6 +30,12 @@ Run the following command from your Ubuntu 16.04 Terminal:
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/arkoar-group/ark_tbw_delegate_server/11f1a69ff98f32a11544188609adea7a62281b14/bin/install.sh)" && source ~/.bashrc
 ```
 
+Bleeding Edge:
+
+```sh
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/arkoar-group/ark_tbw_delegate_server/master/bin/install.sh)" && source ~/.bashrc
+```
+
 NOTE: While this should work in any debian flavor of linux, we have only tested against Ubuntu 16.04 LTS.
 
 ## Running the app

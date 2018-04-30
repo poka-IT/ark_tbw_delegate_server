@@ -4,7 +4,7 @@ defmodule ArkTbwDelegateServer.MixProject do
   def project do
     [
       app: :ark_tbw_delegate_server,
-      version: "1.0.0",
+      version: "1.1.0",
       elixir: "~> 1.6",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
