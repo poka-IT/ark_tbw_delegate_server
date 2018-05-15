@@ -21,13 +21,14 @@ Our focus is on making the delegate true block reward payment process as fast, a
 - Audit Log
 - Disbursement History
 - Outstanding Balances
+- Cron capable
 
 ## Installation
 
 Run the following command from your Ubuntu 16.04 Terminal:
 
 ```sh
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/arkoar-group/ark_tbw_delegate_server/11f1a69ff98f32a11544188609adea7a62281b14/bin/install.sh)" && source ~/.bashrc
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/arkoar-group/ark_tbw_delegate_server/797183ba40efffb8368e69494cc8b10ccc3a0a82/bin/install.sh)" && source ~/.bashrc
 ```
 
 Bleeding Edge:
@@ -51,13 +52,15 @@ Configuration Options:
 
     -c, --config                      path to CONFIG file
     -d, --delegate-address            the delegate ADDRESS to scan
+    -e, --command                     the number of the menu option you would like to auto-run
     -f, --fee-paid                    delegate pays transaction fees for disbursement
-    -i, --initial-block-height        starting BLOCK HEIGHT which all future payment runs will be calculated. This should be the block height of the last block you paid out.
+    -i, --initial-block-height        starting BLOCK HEIGHT from which all future payment runs will be calculated. This should be the block height of the last block you paid out or '0'.
     -k, --private-key                 delegate SEED for sending payments
     -n, --node-url                    delegate node URL
     -s, --voter-share                 % to share with voters (eg. 0.9)
     -t, --payout-threshold            the minimum ARK due before disbursement
 
+        --force,                      skips the prompts and accepts all the things (for use with cron)
         --help,                       this help menu
 ```
 
