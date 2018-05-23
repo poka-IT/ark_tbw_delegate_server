@@ -18,23 +18,13 @@ if [ -z "`which erl`" ]; then
     . $HOME/.asdf/completions/asdf.bash
   fi
 
-  sudo apt-get -y install libssl-dev
-  sudo apt-get -y install make
-  sudo apt-get -y install automake
-  sudo apt-get -y install gcc
   sudo apt-get -y install build-essential
-  sudo apt-get -y install autoconf
-  sudo apt-get -y install m4
-  sudo apt-get -y install libncurses5-dev
-  sudo apt-get -y install libwxgtk3.0-dev
-  sudo apt-get -y install libgl1-mesa-dev
-  sudo apt-get -y install libglu1-mesa-dev
-  sudo apt-get -y install libssh-dev
-  sudo apt-get -y install unixodbc-dev
+  wget https://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb
+  sudo dpkg -i erlang-solutions_1.0_all.deb
+  sudo rm erlang-solutions_1.0_all.deb
+  sudo apt-get update -y
+  sudo apt-get install erlang -y
 
-  asdf plugin-add erlang https://github.com/asdf-vm/asdf-erlang.git
-  asdf install erlang 20.3
-  asdf global erlang 20.3
 fi
 
 wget https://github.com/arkoar-group/ark_tbw_delegate_server/blob/master/releases/atbw-1.1.0?raw=true
