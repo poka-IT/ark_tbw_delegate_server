@@ -10,15 +10,7 @@ if [ -z "`which wget`" ]; then
 fi
 
 if [ -z "`which erl`" ]; then
-  if [ -z "`which asdf`" ]; then
-    git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.4.3
-    echo -e '\n. $HOME/.asdf/asdf.sh' >> ~/.bashrc
-    echo -e '\n. $HOME/.asdf/completions/asdf.bash' >> ~/.bashrc
-    . $HOME/.asdf/asdf.sh
-    . $HOME/.asdf/completions/asdf.bash
-  fi
 
-  sudo apt-get -y install build-essential
   wget https://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb
   sudo dpkg -i erlang-solutions_1.0_all.deb
   sudo rm erlang-solutions_1.0_all.deb
