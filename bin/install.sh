@@ -23,7 +23,7 @@ if [ -z "`which erl`" ]; then
   sudo dpkg -i erlang-solutions_1.0_all.deb
   sudo rm erlang-solutions_1.0_all.deb
   sudo apt-get update -y
-  sudo apt-get install erlang -y
+  sudo apt-get install erlang=1:20.3-1
 
 fi
 
