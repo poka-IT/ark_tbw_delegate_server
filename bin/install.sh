@@ -18,7 +18,6 @@ if [ -z "`which erl`" ]; then
     . $HOME/.asdf/completions/asdf.bash
   fi
 
-  sudo apt-get -y install build-essential
   wget https://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb
   sudo dpkg -i erlang-solutions_1.0_all.deb
   sudo rm erlang-solutions_1.0_all.deb
